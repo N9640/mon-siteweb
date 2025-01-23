@@ -8,12 +8,13 @@ COPY ./siteweb /usr/share/nginx/html
 COPY ./siteweb/certificates /etc/nginx/certs
 
 # Créer un fichier de configuration Nginx avec support SSL et redirection HTTP -> HTTPS
-RUN echo "server { \
+RUN echo 'server { \
     listen 80; \
     server_name _; \
-    return 301 https://\$host\$request_uri; \
-}" > /etc/nginx/conf.d/http_redirect.conf && \
-    echo "server { \
+    # Rediriger toutes les requêtes HTTP vers HTTPS \
+    return 301 https://$host$request_uri; \
+}' > /etc/nginx/conf.d/redirect_http_to_https.conf && \
+    echo 'server { \
     listen 443 ssl; \
     server_name _; \
     ssl_certificate /etc/nginx/certs/Web.crt; \
@@ -22,7 +23,7 @@ RUN echo "server { \
         root /usr/share/nginx/html; \
         index index.html index.htm; \
     } \
-}" > /etc/nginx/conf.d/https.conf
+}' > /etc/nginx/conf.d/https_server.conf
 
 # Exposer uniquement le port 443 (HTTPS)
 EXPOSE 443
